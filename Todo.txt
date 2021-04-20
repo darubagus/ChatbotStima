@@ -1,0 +1,20 @@
+Tools : Flask
+Backend : Python
+String-matching : KMP
+
+Kata Penting : hardcoded pake array
+
+
+1. Menambah task baru
+2. Lihat daftar task
+  - seluruh task
+  - berdasarkan periode waktu
+  - jenis task
+3. Menampilkan deadline task
+4. Update task
+  - input id task
+  - menampilkan pesan
+5. Menandai task yang sudah selesai
+6. Menampilkan help
+7. Mendefinisikan kata penting
+8. Menampilkan pesan error
