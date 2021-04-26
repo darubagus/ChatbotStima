@@ -17,7 +17,7 @@ kataPenting = [
 
 @app.route("/")
 def index():
-    return render_template("search.html")
+    return render_template("home.html")
 
 
 
