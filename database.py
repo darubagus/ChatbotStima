@@ -50,6 +50,19 @@ def getTaskByPeriod(connection, d1, m1, y1, d2, m2, y2):
             WHERE deadline >= ? AND deadline <= ?
         ''', (tanggal1, tanggal2)).fetchall()
 
+def getTaskByExactDate(connection, d1, m1, y1):
+    # Poin 2b
+    day1 = int(d1)
+    month1 = int(m1)
+    year1 = int(y1) 
+    tanggal1 = datetime.date(year1, month1, day1)
+
+    with connection:
+        return connection.execute('''
+            SELECT * FROM task
+            WHERE deadline = ? 
+        ''', (tanggal1,)).fetchall()
+
 def getTaskByType(connection, jenis):
     # Poin 2c
     with connection:
@@ -57,6 +70,14 @@ def getTaskByType(connection, jenis):
             SELECT * FROM task
             WHERE jenis = ?
         ''', (jenis,)).fetchall()
+
+def getTaskByMatkul(connection, matkul):
+    # Poin 3
+    with connection:
+        return connection.execute('''
+            SELECT * FROM task
+            WHERE matkul = ? 
+        ''', (matkul,)).fetchall()
 
 def getTaskByMatkulType(connection, matkul, jenis):
     # Poin 3
@@ -77,7 +98,7 @@ def updateTaskDeadline(connection, id, d, m, y,):
             UPDATE task
             SET deadline = ?
             WHERE id = ?
-        ''', (tanggal, id))
+        ''', (tanggal, int(id)))
 
 def deleteTask(connection, id):
     # Poin 5
@@ -85,5 +106,11 @@ def deleteTask(connection, id):
         connection.execute('''
             DELETE FROM task
             WHERE id = ?
-        ''', (id,))
+        ''', (int(id),))
 
+def getMaxId(connection):
+    with connection:
+        return connection.execute('''
+            SELECT max(id)
+            FROM task
+        ''').fetchall()[0][0]
