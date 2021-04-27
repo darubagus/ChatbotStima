@@ -46,6 +46,7 @@ def KMPStringMatch(text, pattern):
             # Pattern found at index i-j
             # print("Found pattern at" + str(i-j))
             j = lps[j-1]
+            return True
             
         elif (i < lenText and pattern[j] != text[i]) :
             if (j != 0):
@@ -54,6 +55,10 @@ def KMPStringMatch(text, pattern):
             else :
                 i += 1
 
+    return False
+
 
 # DEBUG
+print(KMPStringMatch("aku mengambil matkul IF1111","IF[1234][12][12345][01234]"))
+
 
