@@ -48,7 +48,7 @@ def getTaskByPeriod(connection, d1, m1, y1, d2, m2, y2):
         return connection.execute('''
             SELECT * FROM task
             WHERE deadline >= ? AND deadline <= ?
-        ''', (tanggal1, tanggal2))
+        ''', (tanggal1, tanggal2)).fetchall()
 
 def getTaskByType(connection, jenis):
     # Poin 2c
@@ -56,7 +56,7 @@ def getTaskByType(connection, jenis):
         return connection.execute('''
             SELECT * FROM task
             WHERE jenis = ?
-        ''', (jenis,))
+        ''', (jenis,)).fetchall()
 
 def getTaskByMatkulType(connection, matkul, jenis):
     # Poin 3
@@ -64,7 +64,7 @@ def getTaskByMatkulType(connection, matkul, jenis):
         return connection.execute('''
             SELECT * FROM task
             WHERE matkul = ? AND jenis = ?
-        ''', (matkul, jenis))
+        ''', (matkul, jenis)).fetchall()
 
 def updateTaskDeadline(connection, id, d, m, y,):
     # Poin 4

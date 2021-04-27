@@ -32,11 +32,24 @@ def searchJenis(stringCommand):
     if (jenis != None):
         return jenis.group(0)
     return None
-#DEBUGpy
-print(searchKodeMatkul("menambahkan matkul IF2211"))
-print(searchTanggal("antara 13 Januari 2021"))
 
-# format <command> <jenis tugas> <matkul> <topik> pada <tanggal>
-command = "coba tambah kuis IF2211 Review Liburan Pa Rila pada 14 April 2021"
-print(searchJenis(command))
-print(searchTopik(command))
+def searchTanggalRelatif(stringCommand):
+    satuan = "(?<= )"+"(hari|minggu|bulan)"
+    tglRelatif = re.search(satuan, stringCommand)
+    angka = "(?<=)([123456789][0123456789]*)"+"(?= (hari|minggu|bulan))"
+    searchAngka = re.search(angka, stringCommand)
+    if (tglRelatif != None and searchAngka != None):
+        return searchAngka.group(0), tglRelatif.group(0)
+    return None, None
+
+    
+#DEBUGpy
+#print(searchKodeMatkul("menambahkan matkul IF2211"))
+#print(searchTanggal("antara 13 Januari 2021"))
+#
+## format <command> <jenis tugas> <matkul> <topik> pada <tanggal>
+#command = "coba tambah kuis IF2211 Review Liburan Pa Rila pada 14 April 2021"
+#commandDeadline = "10 minggu ke depan ada deadline apa"
+#print(searchJenis(command))
+#print(searchTopik(command))
+#print(searchTanggalRelatif(commandDeadline))

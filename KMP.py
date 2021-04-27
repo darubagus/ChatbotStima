@@ -59,6 +59,6 @@ def KMPStringMatch(text, pattern):
 
 
 # DEBUG
-print(KMPStringMatch("aku mengambil matkul IF1111","IF[1234][12][12345][01234]"))
+#print(KMPStringMatch("aku mengambil matkul IF1111","IF[1234][12][12345][01234]"))
 
 
