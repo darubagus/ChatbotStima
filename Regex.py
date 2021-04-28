@@ -14,7 +14,7 @@ def searchTanggal(stringCommand):
     # Pencarian tanggal dengan format (dd/mm/yyyy) atau (dd-mm-yyyy) atau (dd "nama bulan" yyyy) dari parameter input
     # Parameter :
         # stringCommand : string
-    tanggal = "(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012]|[Jj]anuari|[Ff]ebruari|[Mm]aret|[Aa]pril|[Mm]ei|[Jj]uni|[Aa]gustus|[Ss]eptember|[Oo]ktober|[Nn]ovember|[Dd]esember)[- /.](20[0123456789][0123456789])"
+    tanggal = "(0?[1-9]|[12][0-9]|3[01])[- /.](0?[1-9]|1[012]|[Jj]anuari|[Ff]ebruari|[Mm]aret|[Aa]pril|[Mm]ei|[Jj]uni|[Aa]gustus|[Ss]eptember|[Oo]ktober|[Nn]ovember|[Dd]esember)[- /.](20[0123456789][0123456789])"
     tgl = re.findall(tanggal,stringCommand)
     if (tgl != None):
         return tgl

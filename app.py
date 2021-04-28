@@ -257,7 +257,8 @@ def index():
             <br>2. Ujian
             <br>3. Tucil
             <br>4. Tubes
-            <br>5. Mummu
+            <br>5. Praktikum
+            <br>6. Mummu
             ''')
         
         # Query dari user tidak valid 
@@ -271,23 +272,23 @@ def convertBulanToInt(bulan):
     # Mengkonversi bulan supaya menjadi sesuai dengan format input ke dalam database 
     # Parameter : 
         # bulan : string
-    if (bulan == '01' or bulan == "Januari" or bulan == "januari"):
+    if (bulan == '01' or bulan == '1' or bulan == "Januari" or bulan == "januari"):
         return '01'
-    elif (bulan == '02' or bulan == "Februari" or bulan == "februari"):
+    elif (bulan == '02' or bulan == '2' or bulan == "Februari" or bulan == "februari"):
         return '02'
-    elif (bulan == '03' or bulan == "Maret" or bulan == "maret"):
+    elif (bulan == '03' or bulan == '3' or bulan == "Maret" or bulan == "maret"):
         return '03'
-    elif (bulan == '04' or bulan == "April" or bulan == "april"):
+    elif (bulan == '04' or bulan == '4' or bulan == "April" or bulan == "april"):
         return '04'
-    elif (bulan == '05' or bulan == "Mei" or bulan == "mei"):
+    elif (bulan == '05' or bulan == '5' or bulan == "Mei" or bulan == "mei"):
         return '05'
-    elif (bulan == '06' or bulan == "Juni" or bulan == "juni"):
+    elif (bulan == '06' or bulan == '6' or bulan == "Juni" or bulan == "juni"):
         return '06'
-    elif (bulan == '07' or bulan == "Juli" or bulan == "juli"):
+    elif (bulan == '07' or bulan == '7' or bulan == "Juli" or bulan == "juli"):
         return '07'
-    elif (bulan == '08' or bulan == "Agustus" or bulan == "agustus"):
+    elif (bulan == '08' or bulan == '8' or bulan == "Agustus" or bulan == "agustus"):
         return '08'
-    elif (bulan == '09' or bulan == "September" or bulan == "september"):
+    elif (bulan == '09' or bulan == '9' or bulan == "September" or bulan == "september"):
         return '09'
     elif (bulan == '10' or bulan == "Oktober" or bulan == "oktober"):
         return '10'
@@ -300,15 +301,15 @@ def isTanggalValid(tanggal):
     # Pemeriksaan tanggal yang sesuai dengan kaidah kalender masehi
     # Parameter :
         # tanggal : string  
-    if (tanggal[1] == '4' or tanggal[1] == 'April' or tanggal[1] == 'april'
-    or tanggal[1] == '6' or tanggal[1] == 'Juni' or tanggal[1] == 'juni'
-    or tanggal[1] == '9' or tanggal[1] == 'September' or tanggal[1] == 'september'
+    if (tanggal[1] == '4' or tanggal[1] == '04' or tanggal[1] == 'April' or tanggal[1] == 'april'
+    or tanggal[1] == '6' or tanggal[1] == '06' or tanggal[1] == 'Juni' or tanggal[1] == 'juni'
+    or tanggal[1] == '9' or tanggal[1] == '09' or tanggal[1] == 'September' or tanggal[1] == 'september'
     or tanggal[1] == '11' or tanggal[1] == 'November' or tanggal[1] == 'november'):
         if (tanggal[0] == '31'):
             return False
         else:
             return True
-    elif (tanggal[1] == '2' or tanggal[1] == 'Februari' or tanggal[1] == 'februari'):
+    elif (tanggal[1] == '2' or tanggal[1] == '02' or tanggal[1] == 'Februari' or tanggal[1] == 'februari'):
         if (int(tanggal[2]) % 4 == 0):
             if (int(tanggal[2]) % 100 == 0):
                 if (int(tanggal[2]) % 400 == 0):
