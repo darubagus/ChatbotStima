@@ -15,18 +15,17 @@
         <title>Jam-bot</title>
     </head>
     <body>
-        <div class="page-content page-container" id="page-content">
+        <div class="page-container">
             <div class="padding">
-                <div class="row container d-flex justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card card-bordered">
+                
+                    
                             <div class="card-header">
                                 <h4 class="card-title"><strong>Jam-Bot</strong></h4>
                             </div>
-                            <div class="ps-container ps-theme-default ps-active-y" id="chat-content" style="overflow-y: scroll !important; height:400px !important;">
+                            <div class="ps-container ps-theme-default ps-active-y" id="chat-content" style="overflow-y: scroll !important;">
                                 {% for i in range(nchat) %}
                                     {% if i%2 == 0 %}
-                                        <div class="media media-chat"> <img class="avatar" src="https://img.icons8.com/color/36/000000/administrator-male.png" alt="...">
+                                        <div class="media media-chat"> <img class="avatar" src="{{url_for('static', filename='/ronaldo.jpg')}}" alt="...">
                                             <div class="media-body">
                                                 {% autoescape false %}
                                                 <p>{{ chat[i] }}</p>
@@ -57,8 +56,8 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
-                </div>
+                    
+                
             </div>
         </div>
            
