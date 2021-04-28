@@ -46,7 +46,7 @@ Untuk menjalankan Jam-Bot, ikuti langkah-langkah berikut:
 * Melihat deadline task: `deadline`, `kumpul`, `tenggat`, `ngumpulin`.
 * Mengubah deadline task: `update`, `ubah`, `undur`, `maju`, `baharu`, `baru`
 * Menyelesaikan task: `selesai`, `kelar`, `beres`, `rampung`.
-* Menampilkan bantuan: `help`, `laku`, `perintah`, `bantu`.
+* Menampilkan bantuan: `help`, `laku`, `perintah`, `bantu`. <br>
 Note: Keyword tetap bisa berfungsi untuk perintah berimbuhan dalam Bahasa Indonesia yang baik dan benar.
 
 ## Author
