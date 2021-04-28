@@ -3,18 +3,18 @@ import pathlib
 import datetime
 
 def connect():
+    # Melakukan sinkronisasi database dalam sebuah variabel
     path = str(pathlib.Path(__file__).parent.absolute())
     return sqlite3.connect(path + "/database.db")
-    # cara pake di main: connection = database.connect()
 
 def createTables(connection):
-    # id | date | matkul | jenis | deskripsi | 
+    # Membuat tabel task dengan atribut id, deadline, matkul, jenis, deskripsi
     with connection:
         connection.execute("CREATE TABLE IF NOT EXISTS task (id INTEGER PRIMARY KEY AUTOINCREMENT, deadline DATE, matkul TEXT, jenis TEXT, deskripsi TEXT)")
 
 def addTask(connection, d, m, y, matkul, jenis, deskripsi):
     # Poin 1
-    # asumsi: deadline adalah string formatnya dd/mm/yyyy atau dd-mm-yyyy atau dd mm yyyy
+    # Menambahkan task baru dari parameter yang dimasukkan
     day = int(d)
     month = int(m)
     year = int(y) 
@@ -28,6 +28,7 @@ def addTask(connection, d, m, y, matkul, jenis, deskripsi):
 
 def getTaskAll(connection):
     # Poin 2a
+    # Melakukan fetch semua instance data dari database task
     with connection:
         return connection.execute('''
             SELECT * FROM task
@@ -35,6 +36,7 @@ def getTaskAll(connection):
 
 def getTaskByPeriod(connection, d1, m1, y1, d2, m2, y2):
     # Poin 2b
+    # Melakukan fetch instance data dari database task pada suatu interval waktu
     day1 = int(d1)
     month1 = int(m1)
     year1 = int(y1) 
@@ -52,6 +54,7 @@ def getTaskByPeriod(connection, d1, m1, y1, d2, m2, y2):
 
 def getTaskByExactDate(connection, d1, m1, y1):
     # Poin 2b
+    # Melakukan fetch instance data dari database task pada suatu waktu
     day1 = int(d1)
     month1 = int(m1)
     year1 = int(y1) 
@@ -65,6 +68,7 @@ def getTaskByExactDate(connection, d1, m1, y1):
 
 def getTaskByType(connection, jenis):
     # Poin 2c
+    # Melakukan fetch instance data dari database task sesuai dengan jenis task tertentu
     with connection:
         return connection.execute('''
             SELECT * FROM task
@@ -73,6 +77,7 @@ def getTaskByType(connection, jenis):
 
 def getTaskByMatkul(connection, matkul):
     # Poin 3
+    # Melakukan fetch instance data dari database task sesuai dengan kode mata kuliah yang dicari
     with connection:
         return connection.execute('''
             SELECT * FROM task
@@ -81,6 +86,7 @@ def getTaskByMatkul(connection, matkul):
 
 def getTaskByMatkulType(connection, matkul, jenis):
     # Poin 3
+    # Melakukan fetch instance data dari database task sesuai dengan kode mata kuliah dan jenis task tertentu
     with connection:
         return connection.execute('''
             SELECT * FROM task
@@ -89,6 +95,7 @@ def getTaskByMatkulType(connection, matkul, jenis):
 
 def updateTaskDeadline(connection, id, d, m, y,):
     # Poin 4
+    # Update deadline dari suatu task
     day = int(d)
     month = int(m)
     year = int(y) 
@@ -102,6 +109,7 @@ def updateTaskDeadline(connection, id, d, m, y,):
 
 def deleteTask(connection, id):
     # Poin 5
+    # Menghapus sebuah instance task dari database
     with connection:
         connection.execute('''
             DELETE FROM task
@@ -109,6 +117,7 @@ def deleteTask(connection, id):
         ''', (int(id),))
 
 def getMaxId(connection):
+    # Mengambil Id maksimum dari database task
     with connection:
         return connection.execute('''
             SELECT max(id)

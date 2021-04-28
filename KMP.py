@@ -1,5 +1,8 @@
 def LPSArray(pattern, lps):
     # Procedure to find longest prefix suffix
+    # Parameter
+        # pattern : string
+        # lps : array of integer
 
     # Length of previous LPS
     length = 0
@@ -24,7 +27,9 @@ def LPSArray(pattern, lps):
                 idx += 1
 
 def KMPStringMatch(text, pattern):
-
+    # Parameter
+        # text      : string
+        # pattern   : string
     # calculates array of lps that will holds the longest prefix suffix
     lps = [0] * len(pattern)
     LPSArray(pattern, lps)
@@ -44,21 +49,20 @@ def KMPStringMatch(text, pattern):
         
         if (j == lenPattern) :
             # Pattern found at index i-j
-            # print("Found pattern at" + str(i-j))
             j = lps[j-1]
             return True
             
+        # mismatch after j matches
         elif (i < lenText and pattern[j] != text[i]) :
+            # Do not match with lps[0..lps[j-1]] but they will match anyway
             if (j != 0):
-                # print("Found pattern at" + str(i-j))
                 j = lps[j-1]
             else :
                 i += 1
 
+    # Pattern not found
     return False
 
 
-# DEBUG
-#print(KMPStringMatch("aku mengambil matkul IF1111","IF[1234][12][12345][01234]"))
 
 

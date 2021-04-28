@@ -5,54 +5,84 @@ from KMP import *
 from Regex import *
 from database import *
 from datetime import *
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+
+# Create stemmer
+factory = StemmerFactory()
+stemmer = factory.create_stemmer()
 
 app = Flask(__name__)
 
-# APP_ROUTE = os.path.dirname(os.path.abspath(__file__))
-
+# List of commands
 command = [
-    'tambah', 'Tambah', # Menambah task baru (poin 1) 
-    'update', 'Update', 'ubah', 'Ubah', 'diundur', 'Diundur', 'dimajukan', 'Dimajukan', # Update task (poin 4)
-    'deadline', 'Deadline', # Melihat deadline (poin 2/3)
-    'selesai', 'Selesai', 'menyelesaikan', 'Menyelesaikan', # Selesai mengerjakan task (poin 5)
-    'help', 'Help', 'lakukan', 'Lakukan', 'perintah', 'Perintah', # Menampilkan help (poin 6)
+    'tambah', 'ingetin', 'ingat',                           # Menambah task baru (poin 1) 
+    'update', 'ubah', 'undur', 'maju', 'baharu', 'baru',    # Update task (poin 4)
+    'deadline', 'kumpul', 'tenggat', 'ngumpulin',           # Melihat deadline (poin 2 dan 3)
+    'selesai', 'kelar', 'beres', 'rampung',                 # Selesai mengerjakan task (poin 5)
+    'help', 'laku', 'perintah', 'bantu',                    # Menampilkan help (poin 6)
     'paansi'
 ]
 
-chat = []
-nchat = 0
+# Global variable init
+chat = []   # Array of chats, menyimpan data chat
+nchat = 0   # length of Array of chat, untuk menentukan harus diletakkan di bubble kanan atau kiri
 
 @app.route("/", methods = ['POST', 'GET'])
 def index():
-    connection = connect() # ini database
-    #chat = ["Selamat datang di jam-bot (red: jamboard), masukkan perintah anda"] # array buat nampung chat (string)
+    connection = connect() # Connecet ke database
+    
+    # Inisialisasi pesan awal bot
     if (len(chat) == 0):
         chat.append("Selamat datang di jam-bot (red: jamboard), masukkan perintah anda")
+        
+    # Request query dari home.html
     if (request.method == 'POST'):
-        query = request.form['query'] # variabel query di html
+        query = request.form['query']
+        # Append query dari user ke array of chat
         chat.append(query)
+        # Stemming query
+        stemmedQuery = query
+        stemmedQuery = stemmer.stem(stemmedQuery)
+
+        # String matching query dengan array of commands
         for cmd in command:
-            if (KMPStringMatch(query, cmd)):
+            if (KMPStringMatch(stemmedQuery, cmd)):
                 break
 
-        if (cmd == 'tambah' or cmd == 'Tambah'):
+        # Menambah task baru (poin 1)
+        if (cmd == 'tambah' or cmd == "ingat" or cmd == 'ingetin'):
+            
+            # Pencarian keyword dengan regex
             matkul = searchKodeMatkul(query)
             topik = searchTopik(query)
             tanggal = searchTanggal(query)
             jenis = searchJenis(query)
+            
+            # Syarat untuk menambahkan task : ada matkul, topik, tanggal, dan jenis
+            # Jika seluruh syarat terpenuhi
             if (matkul != None and topik != None and tanggal != None and jenis != None):
+
+                # Memeriksa apakah tanggal valid
                 if (isTanggalValid(tanggal[0])):
+
+                    # Menambah task ke database
                     addTask(connection, tanggal[0][0], convertBulanToInt(tanggal[0][1]), tanggal[0][2], matkul, jenis, topik)
+
+                    # Mengambil semua task yang ada di database
                     arr = getTaskAll(connection)
                     line = ""
-                    #(ID: 1) 14/04/2021 - IF2211 - Tubes - String matching
-                    # d, m, y, matkul, jenis, deskripsi
+                    
+                    # Format output daftar semua task
                     for el in arr:
                         line += "(ID: " + str(el[0]) + ") " + str(el[1]) + " - " + str(el[2]) + " - " + str(el[3]) + " - " + str(el[4]) + "<br>"
                     chat.append("[Task Berhasil Dicatat]<br>" + line)
-                else:
+                
+                # Tanggal tidak valid
+                else:  
                     chat.append("Tanggal tidak valid")
-            else:
+
+            # Jika ada syarat yang tidak terpenuhi  
+            else:   
                 error = ""
                 if (matkul == None):
                     error += "Tidak ada kode matkul<br>"
@@ -63,9 +93,12 @@ def index():
                 if (jenis == None):
                     error += "Tidak ada jenis tugas<br>"   
 
+                # Menambahkan pesan error ke chat
                 chat.append(error)    
         
-        elif (cmd == 'deadline' or cmd == 'Deadline'):
+        # Menampilkan deadline task (poin 2 dan 3)
+        elif (cmd == 'deadline' or cmd == 'kumpul' or cmd == 'tenggat' or cmd == 'ngumpulin'):
+            # Proses pencarian keyword menggunakan regex
             matkul = searchKodeMatkul(query)
             print(matkul)
             topik = searchTopik(query)
@@ -76,12 +109,13 @@ def index():
             print(tanggalRelatif)
             jenis = searchJenis(query)
             print(jenis)
-            # semua kasus
+            # Kasus general jika tidak dispecify topik, tanggal, tanggalRelatif, dan jenis tugas
             if (matkul == None and topik == None and tanggal == [] and tanggalRelatif == (None,None) and jenis == None):
+                # fetch data dari database tasks
                 temp = getTaskAll(connection)
                 line = ""
-                    #(ID: 1) 14/04/2021 - IF2211 - Tubes - String matching
-                    # d, m, y, matkul, jenis, deskripsi
+                    
+                # Memasukkan task ke dalam array of chats
                 for el in temp:
                     line += "(ID: " + str(el[0]) + ") " + str(el[1]) + " - " + str(el[2]) + " - " + str(el[3]) + " - " + str(el[4]) + "<br>"
                 chat.append("[Daftar Deadline]<br>" + line)
@@ -91,15 +125,19 @@ def index():
                 # based on period (1 minggu, 2 hari, 3 bulan, etc)
                 satuan = tanggalRelatif[1]
                 durasi = int(tanggalRelatif[0])
+                # Menghitung jumlah hari yang harus ditambah ke current date
                 if (tanggal==[]):
                     if (satuan == "minggu"):
                         durasi *= 7
                     elif (satuan == "bulan"):
                         durasi *= 30
-                    tglAkhir = datetime.now()#.timedelta(days=durasi)
+                    # Menghitung tanggal relatif
+                    tglAkhir = datetime.now()
                     tglAkhir = tglAkhir + timedelta(days=durasi)
+                    # Fetch data dari database tasks
                     temp = getTaskByPeriod(connection, datetime.now().day, datetime.now().month , datetime.now().year, tglAkhir.day, tglAkhir.month , tglAkhir.year)
                     line = ""
+                    # Memasukkan task ke dalam array of chats
                     for el in temp:
                         line += "(ID: " + str(el[0]) + ") " + str(el[1]) + " - " + str(el[2]) + " - " + str(el[3]) + " - " + str(el[4]) + "<br>"
                     chat.append("[Daftar Deadline]<br>" + line)
@@ -107,70 +145,106 @@ def index():
                 elif(tanggalRelatif==(None,None)):
                     # based on range 2 tanggal 
                     if (len(tanggal)==2):
+                        # Fetch data dari database tasks
                         temp = getTaskByPeriod(connection, tanggal[0][0], convertBulanToInt(tanggal[0][1]), tanggal[0][2], tanggal[1][0], convertBulanToInt(tanggal[1][1]), tanggal[1][2])
                         line = ""
+                        # Memasukkan task ke dalam array of chats
                         for el in temp:
                             line += "(ID: " + str(el[0]) + ") " + str(el[1]) + " - " + str(el[2]) + " - " + str(el[3]) + " - " + str(el[4]) + "<br>"
                         chat.append("[Daftar Deadline]<br>" + line)
                     #based on 1 tanggal
                     elif (len(tanggal)==1):
+                        # Fetch data dari database tasks
                         temp = getTaskByExactDate(connection, tanggal[0][0], convertBulanToInt(tanggal[0][1]), tanggal[0][2])
                         line = ""
+                        # Memasukkan task ke dalam array of chats
                         for el in temp:
                             line += "(ID: " + str(el[0]) + ") " + str(el[1]) + " - " + str(el[2]) + " - " + str(el[3]) + " - " + str(el[4]) + "<br>"
                         chat.append("[Daftar Deadline]<br>" + line)
             # based on matkul atau jenis kata penting
             elif (topik == None and tanggal == [] and tanggalRelatif == (None,None)) and (matkul != None or jenis!= None):
                 if (matkul==None):
+                    # Fetch data dari database tasks
                     temp = getTaskByType(connection,jenis)
                     line = ""
+                    # Memasukkan task ke dalam array of chats
                     for el in temp:
                         line += "(ID: " + str(el[0]) + ") " + str(el[1]) + " - " + str(el[2]) + " - " + str(el[3]) + " - " + str(el[4]) + "<br>"
                     chat.append("[Daftar Deadline]<br>" + line)
                 elif(jenis==None):
+                    # Fetch data dari database tasks
                     temp = getTaskByMatkul(connection,matkul)
                     line = ""
+                    # Memasukkan task ke dalam array of chats
                     for el in temp:
                         line += "(ID: " + str(el[0]) + ") " + str(el[1]) + " - " + str(el[2]) + " - " + str(el[3]) + " - " + str(el[4]) + "<br>"
                     chat.append("[Daftar Deadline]<br>" + line)
                 else:
+                    # Fetch data dari database tasks
                     temp = getTaskByMatkulType(connection,matkul,jenis)
                     line = ""
+                    # Memasukkan task ke dalam array of chats
                     for el in temp:
                         line += "(ID: " + str(el[0]) + ") " + str(el[1]) + " - " + str(el[2]) + " - " + str(el[3]) + " - " + str(el[4]) + "<br>"
                     chat.append("[Daftar Deadline]<br>" + line)
                        
-
-        elif (cmd == 'update' or cmd == 'Update' or cmd == 'ubah' or cmd == 'Ubah' or cmd == 'diundur' or cmd == 'Diundur' or cmd == 'dimajukan' or cmd == 'Dimajukan'):
+        # Memperbarui deadline task tertentu (poin 4)
+        elif (cmd == 'update' or cmd == 'ubah' or cmd == 'undur' or cmd == 'maju' or cmd == 'baharu' or cmd == 'baru'):
+            
+            # Pencarian keyword dengan regex
             id = searchID(query)
             tanggal = searchTanggal(query)
+            
+            # Syarat terpenuhi: query mengandung id dan tanggal yang valid
             if (id != None and tanggal != [] and int(id) > 0 and int(id) <= getMaxId(connection) and isTanggalValid(tanggal[0])):
+
+                # Update database
                 updateTaskDeadline(connection, id, tanggal[0][0], tanggal[0][1], tanggal[0][2])
+                # Pesan berhasil
                 chat.append("Deadline task " + id + " berhasil diperbarui.")
+
+            # Syarat tidak terpenuhi
             else:
                 error = ""
+                # Tidak ada id
                 if (id == None):
                     error += "Tidak ada ID task<br>"
+                # Id tidak valid (berada di luar range id dalam database)
                 elif (int(id) <= 0 or int(id) > getMaxId()):
                     error += "Task tersebut tidak ditemukan di daftar task<br>"
+                # Tidak ada tanggal
                 if (tanggal == []):
                     error += "Tidak ada tanggal<br>"
+                # Tanggal tidak valid
                 elif (not isTanggalValid(tanggal[0])):
                     error += "Tanggal tidak valid"
+                # Menampilkan pesan error
                 chat.append(error)
         
-        elif (cmd == 'selesai' or cmd == 'Selesai' or cmd == 'menyelesaikan' or cmd == 'Menyelesaikan'):
+        # Selesai mengerjakan task (poin 5)
+        elif (cmd == 'selesai' or cmd == 'kelar' or cmd == 'beres' or cmd == 'rampung'):
+            
+            # Pencarian keyword dengan regex
             id = searchID(query)
+
+            # Syarat terpenuhi: query mengandung id yang valid
             if (id != None and int(id) > 0 and int(id) <= getMaxId(connection)):
+                # Delete task dari database
                 deleteTask(connection, id)
+                # Pesan berhasil
                 chat.append("Berhasil mengurangi kekeosan")
+
+            # Syarat tidak terpenuhi
             else:
+                # Tidak ada id
                 if (id == None):
                     chat.append("Tidak ada ID task")
+                # Id tidak valid
                 elif (int(id) <= 0 or int(id) > getMaxId(connection)):
                     chat.append("Task tersebut tidak ditemukan di daftar task")
 
-        elif (cmd == 'help' or cmd == 'Help' or cmd == 'lakukan' or cmd == 'Lakukan' or cmd == 'perintah' or cmd == 'Perintah'):
+        # Menampilkan list of commands yang dapat dilakukan
+        elif (cmd == 'help' or cmd == 'laku' or cmd == 'perintah' or cmd == 'bantu'):
             chat.append('''[Fitur]
             <br>1. Menambahkan task baru 
             <br>2. Melihat daftar task 
@@ -185,19 +259,18 @@ def index():
             <br>4. Tubes
             <br>5. Mummu
             ''')
-                             
+        
+        # Query dari user tidak valid 
         else:
-            chat.append("Ngomong apa lo")
+            chat.append("Perintah tidak dikenali, tulis yang bener dong")
         
-        print(cmd)
-        print(chat)
-        #chat.append(cmd)
-        
-
     return render_template("home.html", chat=chat, nchat=len(chat))
 
 
 def convertBulanToInt(bulan):
+    # Mengkonversi bulan supaya menjadi sesuai dengan format input ke dalam database 
+    # Parameter : 
+        # bulan : string
     if (bulan == '01' or bulan == "Januari" or bulan == "januari"):
         return '01'
     elif (bulan == '02' or bulan == "Februari" or bulan == "februari"):
@@ -224,6 +297,9 @@ def convertBulanToInt(bulan):
         return '12'
 
 def isTanggalValid(tanggal):
+    # Pemeriksaan tanggal yang sesuai dengan kaidah kalender masehi
+    # Parameter :
+        # tanggal : string  
     if (tanggal[1] == '4' or tanggal[1] == 'April' or tanggal[1] == 'april'
     or tanggal[1] == '6' or tanggal[1] == 'Juni' or tanggal[1] == 'juni'
     or tanggal[1] == '9' or tanggal[1] == 'September' or tanggal[1] == 'september'
@@ -257,18 +333,6 @@ def isTanggalValid(tanggal):
                 return True
     else:
         return True
-    """
-    if (tahun % 4) == 0:
-        if (tahun % 100) == 0:
-            if (tahun % 400) == 0:
-                print "Tahun Kabisat"
-            else:
-                print "Bukan Tahun Kabisat"
-        else:
-            print "Tahun Kabisat"
-    else:
-        print "Bukan Tahun Kabisat"
-    """
 
 # MAIN
 if __name__ == "__main__":
