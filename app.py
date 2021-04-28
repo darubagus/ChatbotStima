@@ -29,7 +29,8 @@ nchat = 0   # length of Array of chat, untuk menentukan harus diletakkan di bubb
 
 @app.route("/", methods = ['POST', 'GET'])
 def index():
-    connection = connect() # Connecet ke database
+    connection = connect()      # Connecet ke database
+    createTables(connection)    # Membuat database baru jika belum ada
     
     # Inisialisasi pesan awal bot
     if (len(chat) == 0):
