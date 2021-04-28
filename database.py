@@ -52,6 +52,24 @@ def getTaskByPeriod(connection, d1, m1, y1, d2, m2, y2):
             WHERE deadline >= ? AND deadline <= ?
         ''', (tanggal1, tanggal2)).fetchall()
 
+def getTaskByPeriodType(connection, d1, m1, y1, d2, m2, y2, type):
+    # Poin 2b
+    # Melakukan fetch instance data dari database task pada suatu interval waktu dan berjenis tertentu
+    day1 = int(d1)
+    month1 = int(m1)
+    year1 = int(y1) 
+    tanggal1 = datetime.date(year1, month1, day1)
+    day2 = int(d2)
+    month2 = int(m2)
+    year2 = int(y2) 
+    tanggal2 = datetime.date(year2, month2, day2)
+
+    with connection:
+        return connection.execute('''
+            SELECT * FROM task
+            WHERE deadline >= ? AND deadline <= ? AND jenis = ?
+        ''', (tanggal1, tanggal2, type)).fetchall()
+
 def getTaskByExactDate(connection, d1, m1, y1):
     # Poin 2b
     # Melakukan fetch instance data dari database task pada suatu waktu
@@ -65,6 +83,20 @@ def getTaskByExactDate(connection, d1, m1, y1):
             SELECT * FROM task
             WHERE deadline = ? 
         ''', (tanggal1,)).fetchall()
+
+def getTaskByExactDateType(connection, d1, m1, y1, type):
+    # Poin 2b
+    # Melakukan fetch instance data dari database task pada suatu waktu dan jenis tertentu
+    day1 = int(d1)
+    month1 = int(m1)
+    year1 = int(y1) 
+    tanggal1 = datetime.date(year1, month1, day1)
+
+    with connection:
+        return connection.execute('''
+            SELECT * FROM task
+            WHERE deadline = ? AND jenis = ?
+        ''', (tanggal1,type)).fetchall()
 
 def getTaskByType(connection, jenis):
     # Poin 2c

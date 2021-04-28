@@ -121,12 +121,12 @@ def index():
                 chat.append("[Daftar Deadline]<br>" + line)
                 
             # based on tanggal atau period time
-            elif ((matkul == None and topik == None and jenis == None) and (tanggal != [] or tanggalRelatif != (None,None))):
+            elif ((matkul == None and topik == None) and (tanggal != [] or tanggalRelatif != (None,None))):
                 # based on period (1 minggu, 2 hari, 3 bulan, etc)
-                satuan = tanggalRelatif[1]
-                durasi = int(tanggalRelatif[0])
                 # Menghitung jumlah hari yang harus ditambah ke current date
                 if (tanggal==[]):
+                    satuan = tanggalRelatif[1]
+                    durasi = int(tanggalRelatif[0])
                     if (satuan == "minggu"):
                         durasi *= 7
                     elif (satuan == "bulan"):
@@ -134,8 +134,11 @@ def index():
                     # Menghitung tanggal relatif
                     tglAkhir = datetime.now()
                     tglAkhir = tglAkhir + timedelta(days=durasi)
-                    # Fetch data dari database tasks
-                    temp = getTaskByPeriod(connection, datetime.now().day, datetime.now().month , datetime.now().year, tglAkhir.day, tglAkhir.month , tglAkhir.year)
+                    if (jenis == None):
+                        # Fetch data dari database tasks
+                        temp = getTaskByPeriod(connection, datetime.now().day, datetime.now().month , datetime.now().year, tglAkhir.day, tglAkhir.month , tglAkhir.year)
+                    else :
+                        temp = getTaskByPeriodType(connection, datetime.now().day, datetime.now().month , datetime.now().year, tglAkhir.day, tglAkhir.month , tglAkhir.year, jenis)
                     line = ""
                     # Memasukkan task ke dalam array of chats
                     for el in temp:
@@ -145,8 +148,11 @@ def index():
                 elif(tanggalRelatif==(None,None)):
                     # based on range 2 tanggal 
                     if (len(tanggal)==2):
-                        # Fetch data dari database tasks
-                        temp = getTaskByPeriod(connection, tanggal[0][0], convertBulanToInt(tanggal[0][1]), tanggal[0][2], tanggal[1][0], convertBulanToInt(tanggal[1][1]), tanggal[1][2])
+                        if (jenis==None):
+                            # Fetch data dari database tasks
+                            temp = getTaskByPeriod(connection, tanggal[0][0], convertBulanToInt(tanggal[0][1]), tanggal[0][2], tanggal[1][0], convertBulanToInt(tanggal[1][1]), tanggal[1][2])            
+                        else :
+                            temp = getTaskByPeriodType(connection, tanggal[0][0], convertBulanToInt(tanggal[0][1]), tanggal[0][2], tanggal[1][0], convertBulanToInt(tanggal[1][1]), tanggal[1][2], jenis)
                         line = ""
                         # Memasukkan task ke dalam array of chats
                         for el in temp:
@@ -154,8 +160,11 @@ def index():
                         chat.append("[Daftar Deadline]<br>" + line)
                     #based on 1 tanggal
                     elif (len(tanggal)==1):
-                        # Fetch data dari database tasks
-                        temp = getTaskByExactDate(connection, tanggal[0][0], convertBulanToInt(tanggal[0][1]), tanggal[0][2])
+                        if (jenis == None):
+                            # Fetch data dari database tasks
+                            temp = getTaskByExactDate(connection, tanggal[0][0], convertBulanToInt(tanggal[0][1]), tanggal[0][2])
+                        else :
+                            temp = getTaskByExactDateType(connection, tanggal[0][0], convertBulanToInt(tanggal[0][1]), tanggal[0][2], jenis)
                         line = ""
                         # Memasukkan task ke dalam array of chats
                         for el in temp:
